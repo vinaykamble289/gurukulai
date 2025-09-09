@@ -5,3 +5,6 @@ pydantic
 google-generativeai
 bcrypt
 python-multipart
+pydantic[email]
+email-validator
+sqlmodel
