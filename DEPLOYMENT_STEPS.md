@@ -6,6 +6,7 @@ This file contains the step-by-step instructions for deploying the platform to p
 - GitHub repository set up and pushed.
 - Accounts created for Vercel, Render, and Supabase.
 - CI/CD pipeline configured (`.github/workflows/ci.yml`).
+- Deployment configurations created (`render.yaml`, `frontend/vercel.json`).
 - Environment variables prepared (API keys, secrets).
 
 ## 1. Deploy to Vercel (Frontend)
@@ -26,33 +27,38 @@ This file contains the step-by-step instructions for deploying the platform to p
 ## 2. Deploy to Render (Backend and ML Service)
 1. Sign up/login to [Render](https://render.com).
 2. Connect your GitHub repository to Render.
-3. **For Backend Service**:
-   - Click "New" > "Web Service".
-   - Select your repo, set branch to `main`.
-   - Configure:
-     - **Runtime**: Node
-     - **Build Command**: `npm install && npm run build`
-     - **Start Command**: `npm start`
-     - **Root Directory**: `backend`
-   - Set environment variables:
-     - `NODE_ENV`: `production`
-     - `SUPABASE_URL`: Your Supabase project URL
-     - `SUPABASE_ANON_KEY`: Your Supabase anon key
-     - `JWT_SECRET`: Secure random string
-     - `GEMINI_API_KEY`: Your Google Gemini API key
-   - Deploy. Note the service URL.
-4. **For ML Service**:
-   - Click "New" > "Web Service".
-   - Select your repo, set branch to `main`.
-   - Configure:
-     - **Runtime**: Python 3
-     - **Build Command**: `pip install -r requirements.txt`
-     - **Start Command**: `python app.py`
-     - **Root Directory**: `ml-service`
-   - Set environment variables:
-     - `GEMINI_API_KEY`: Your Google Gemini API key
-     - `BACKEND_URL`: Your Render backend URL
-   - Deploy. Note the service URL.
+3. **Option 1: Manual Setup (Recommended for beginners)**:
+   - **For Backend Service**:
+     - Click "New" > "Web Service".
+     - Select your repo, set branch to `main`.
+     - Configure:
+       - **Runtime**: Node
+       - **Build Command**: `npm install && npm run build`
+       - **Start Command**: `npm start`
+       - **Root Directory**: `backend`
+     - Set environment variables:
+       - `NODE_ENV`: `production`
+       - `SUPABASE_URL`: Your Supabase project URL
+       - `SUPABASE_ANON_KEY`: Your Supabase anon key
+       - `JWT_SECRET`: Secure random string
+       - `GEMINI_API_KEY`: Your Google Gemini API key
+     - Deploy. Note the service URL.
+   - **For ML Service**:
+     - Click "New" > "Web Service".
+     - Select your repo, set branch to `main`.
+     - Configure:
+       - **Runtime**: Python 3
+       - **Build Command**: `pip install -r requirements.txt`
+       - **Start Command**: `python app.py`
+       - **Root Directory**: `ml-service`
+     - Set environment variables:
+       - `GEMINI_API_KEY`: Your Google Gemini API key
+       - `BACKEND_URL`: Your Render backend URL
+     - Deploy. Note the service URL.
+4. **Option 2: Declarative Deployment (using render.yaml)**:
+   - Upload or reference `render.yaml` in your repo root.
+   - Render will auto-configure services based on the file.
+   - Set environment variables in Render dashboard for each service.
 5. For staging, create separate services connected to `staging` branch.
 
 ## 3. Update Configurations
