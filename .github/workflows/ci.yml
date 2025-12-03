@@ -1,0 +1,75 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+    - name: Install backend dependencies
+      run: cd backend && npm ci
+    - name: Run backend tests
+      run: cd backend && npm test
+    - name: Build backend
+      run: cd backend && npm run build
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    - name: Install frontend dependencies
+      run: cd frontend && npm ci
+    - name: Run frontend tests
+      run: cd frontend && npm test
+    - name: Build frontend
+      run: cd frontend && npm run build
+
+  test-ml-service:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install ML service dependencies
+      run: cd ml-service && pip install -r requirements.txt
+    - name: Run ML service tests
+      run: cd ml-service && python -m pytest  # Assuming tests exist
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, test-ml-service]
+    if: github.ref == 'refs/heads/staging'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Docker
+      run: docker --version
+    - name: Run integration tests
+      run: npm run test:integration  # Assuming a script exists in root package.json
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+    - name: Deploy to production
+      run: echo "Manual deployment trigger - use Render/Vercel dashboards or APIs"
