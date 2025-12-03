@@ -17,6 +17,7 @@
     "build:frontend": "cd frontend && npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:integration": "echo 'Run integration tests here - e.g., test API endpoints'",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
   },
